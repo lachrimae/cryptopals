@@ -25,8 +25,10 @@ source-repository head
 
 library
   exposed-modules:
+      Bitwise
       Encoding
       Lib
+      Scoring
   other-modules:
       Paths_cryptopals
   hs-source-dirs:

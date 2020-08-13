@@ -1,13 +1,15 @@
 {-# LANGUAGE PackageImports #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Encoding
     ( fromHex
     , toHex
     , fromBase64
     , toBase64
-    , Hex
-    , Base64
+    , Hex(..)
+    , Base64(..)
     ) where
 
 import qualified "bytestring" Data.ByteString as B
@@ -18,12 +20,12 @@ import "split" Data.List.Split (chunksOf)
 import "base" Data.Char (toUpper)
 import "base" Data.Word (Word8)
 import "base" Data.String (IsString, fromString)
-import "base" System.IO.Unsafe (unsafePerformIO)
+import "base" GHC.Exts (IsList)
 
 newtype Hex = Hex T.Text
-    deriving (Eq, Show)
+    deriving (Eq, Show, IsList)
 newtype Base64 = Base64 T.Text
-    deriving (Eq, Show)
+    deriving (Eq, Show, IsList)
 
 instance IsString Hex where
     fromString s = if and [c `elem` (map fst hexDict) | c <- s']
