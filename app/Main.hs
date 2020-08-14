@@ -4,6 +4,8 @@ import Lib
 import Set1
 
 main :: IO ()
-main = if and [challenge1, challenge2]
-          then putStrLn "success"
-          else putStrLn "fail"
+main = do
+    putStrLn $ if and [challenge1, challenge2]
+                  then "success"
+                  else "fail"
+    print challenge3Secret

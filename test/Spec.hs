@@ -1,2 +1,17 @@
+{-# LANGUAGE PackageImports #-}
+
+module Spec where
+
+import "hspec" Test.Hspec
+import "QuickCheck" Test.QuickCheck
+import Control.Exception (evaluate)
+import Encoding.Test
+import Scoring.Test
+import Bitwise.Test
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec $ do
+    testXor
+    testHex
+    testBase64
+--    scoringTests

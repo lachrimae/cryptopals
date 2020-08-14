@@ -24,6 +24,7 @@ import "base" GHC.Exts (IsList)
 
 newtype Hex = Hex T.Text
     deriving (Eq, Show, IsList)
+
 newtype Base64 = Base64 T.Text
     deriving (Eq, Show, IsList)
 
