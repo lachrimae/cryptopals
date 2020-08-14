@@ -29,15 +29,28 @@ newtype Base64 = Base64 T.Text
     deriving (Eq, Show, IsList)
 
 instance IsString Hex where
-    fromString s = if and [c `elem` (map fst hexDict) | c <- s']
+    fromString s = if and (even (length s) : [c `elem` (map fst hexDict) | c <- s'])
                       then Hex . T.pack $ s'
                       else undefined
                      where s' = map toUpper s
 
 instance IsString Base64 where
-    fromString s = if and [c `elem` (map fst base64Dict) | c <- s]
+    fromString s = if length s `mod` 4 == 0
+                   && startCorrect
+                   && endCorrect
                       then Base64 . T.pack $ s
                       else undefined
+                          where startCorrect = and [c `elem` goodChars       | c <- start      ]
+                                endCorrect   = and [c `elem` goodChars       | c <- take 2 end ]
+                                            && and [c `elem` '=' : goodChars | c <- drop 2 end ]
+                                            && if length end == 4
+                                                  then (isPad 2 end `implies` isPad 3 end)
+                                                  else False
+                                start        = take (length s - 4) s
+                                end          = drop (length s - 4) s
+                                goodChars    = map fst base64Dict
+                                isPad n s    = s !! n == '='
+                                implies a b  = if a then b else True
 
 hexDict :: [(Char, Word8)]
 hexDict = [('0', 0), ('1', 1),  ('2', 2),  ('3', 3),  ('4', 4),  ('5', 5),  ('6', 6),  ('7', 7),  ('8', 8),  ('9', 9),  ('A', 10),  ('B', 11),  ('C', 12),  ('D', 13),  ('E', 14),  ('F', 15)]
