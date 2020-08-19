@@ -14,4 +14,4 @@ main = hspec $ do
     testXor
     testHex
     testBase64
---    scoringTests
+    scoringTests

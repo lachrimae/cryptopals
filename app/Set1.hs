@@ -9,7 +9,7 @@ module Set1
 
 import "text" Data.Text.Encoding (decodeUtf8)
 import "text" Data.Text (Text, toUpper, pack)
-import "base" Data.Maybe (isJust, fromJust)
+import "base" Data.Maybe (isJust, catMaybes, fromJust)
 import "base" Data.List (sortBy)
 import "base" GHC.Exts (toList)
 import Encoding
@@ -47,8 +47,8 @@ challenge3Input :: Hex
 challenge3Input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
 challenge3Secret  :: Text
-challenge3Secret = decodeUtf8 . head . sortBy (\a b -> compare (dfe a) (dfe b)) . map fromJust
-                 $ [xor (fromHex . constHex $ c) (fromHex challenge3Input) | c <- ['a'..'Z']]
+challenge3Secret = decodeUtf8 . head . sortBy (\a b -> compare (dfe a) (dfe b)) . catMaybes
+                 $ [xor (fromHex . constHex $ c) (fromHex challenge3Input) | c <- ['0'..'9'] ++ ['a'..'f']]
                      where constHex  = Hex . pack . replicate length'
                            dfe       = distFromEnglish . fromByteString
                            length'   = length . toList $ challenge3Input

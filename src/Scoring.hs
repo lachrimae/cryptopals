@@ -5,6 +5,10 @@ module Scoring
     ( distFromEnglish
     , fromText
     , fromByteString
+    , FrequencyMap(..)
+    , initializeAtChar
+    , compareFrequencies
+    , englishFrequencies
     ) where
 
 import qualified "containers" Data.Set as S
@@ -18,6 +22,7 @@ import "base" Data.Maybe (fromJust)
 import "base" Data.Monoid
 
 data FrequencyMap = FrequencyMap Int (Map Char Double)
+    deriving (Show, Eq)
 
 instance Semigroup FrequencyMap where
     (<>) (FrequencyMap 0 m1)
@@ -34,20 +39,23 @@ instance Semigroup FrequencyMap where
               n2' = fromIntegral n2
 
 instance Monoid FrequencyMap where
-    mempty = FrequencyMap 0 (fromList $ zip ['a'..'z'] [0..])
+    mempty = FrequencyMap 0 (fromList $ zip ['a'..'z'] [0 | _ <- [0..]])
 
 fromMap :: Int -> Map Char Double -> Maybe FrequencyMap
-fromMap n f = if S.fromList (keys f) == S.fromList ['a'..'z']
-                 && (sum (elems f) == 1.0 || sum (elems f) == 0.0)
+fromMap n f = if S.fromList (keys f) `S.isSubsetOf` S.fromList ['a'..'z']
+                 && (abs (sum (elems f) - 1.0) < 0.05 || sum (elems f) == 0.0)
                   then Just $ FrequencyMap n f
                   else Nothing
 
 -- Only valid on upper- or lower-case letters.
 initializeAtChar :: Char -> Maybe FrequencyMap
-initializeAtChar c = fromMap 1
-                   . adjust (1 +) (C.toLower c)
-                   . fromList
-                   $ zip ['a'..'z'] [0..]
+initializeAtChar c
+  = if not (c `elem` ['a'..'z'])
+       then Nothing
+       else fromMap 1
+          . adjust (1 +) (C.toLower c)
+          . fromList
+          $ zip ['a'..'z'] [0 | _ <- [0..]]
 
 -- Only valid on upper- or lower-case letters.
 adjustFrequencies :: FrequencyMap -> Char -> FrequencyMap
